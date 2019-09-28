@@ -1,0 +1,35 @@
+import pymysql
+import hashlib
+import random
+
+arr = []
+
+def operation(newStr):
+    md5 = hashlib.md5()
+    md5.update(newStr.encode('utf-8'))
+    newMd5 = md5.hexdigest()
+    arr.append(newMd5)
+
+def createRandom():
+    for i in range (1,20):
+        rand = random.choice('abcdefghijklmnopqrstuvwxyz!@#$%^&*()')
+        newStr = str(i)+rand
+        operation(newStr)
+
+def ins(arr):
+    conn = pymysql.connect('127.0.0.1','root','123465','local')
+    #得到一个可以执行SQL语句的光标对象
+    cursor = conn.cursor()
+    #定义要执行的sql语句
+    sql = 'insert into test (test) values (%s);'
+    #拼接并执行sql语句  /插入多条
+    cursor.executemany(sql,arr)
+    #提交sql 
+    conn.commit()
+    #关闭连接
+    cursor.close()
+    conn.close()
+
+if __name__ == '__main__':
+    createRandom()
+    ins(arr)
